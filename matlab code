@@ -1,0 +1,48 @@
+
+clc;
+clear;
+close all;
+
+% ECW26016 - Ambient Temperature Analysis
+
+ratedRise_C = 55;
+loadExponent = 1.6;
+tau = 45;
+
+loadPercent = 80;
+ambientValues = [25 35 45];
+
+t = 0:1:240;
+
+figure;
+hold on;
+
+for i = 1:length(ambientValues)
+
+    ambient_C = ambientValues(i);
+
+    load_pu = loadPercent / 100;
+
+    steadyRise_C = ratedRise_C * ...
+        load_pu^loadExponent;
+
+    steadyTemp_C = ambient_C + steadyRise_C;
+
+    T = steadyTemp_C - ...
+        (steadyTemp_C - ambient_C) .* exp(-t/tau);
+
+    plot(t, T, 'LineWidth', 2);
+
+    fprintf('Ambient: %d C | Final temperature: %.2f C\n', ...
+        ambient_C, T(end));
+end
+
+xlabel('Time (minutes)');
+ylabel('Temperature (°C)');
+title('Transformer Temperature at Different Ambient Temperatures');
+
+legend('Ambient 25°C', 'Ambient 35°C', ...
+    'Ambient 45°C', 'Location', 'southeast');
+
+grid on;
+hold off;
